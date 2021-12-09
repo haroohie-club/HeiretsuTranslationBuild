@@ -1,0 +1,1 @@
+wit extract original/R44J8P.wbfs -d extracted/ --verbose --verbose

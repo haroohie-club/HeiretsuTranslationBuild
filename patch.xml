@@ -1,0 +1,16 @@
+<wiidisc version="1">
+	<id game="R44" />
+	<options>
+		<section name="Heiretsu Replacement">
+			<option name="Heiretsu Replacement">
+				<choice name="Enabled">
+					<patch id="HeiretsuFolder" />
+				</choice>
+			</option>
+		</section>
+	</options>
+	<patch id="HeiretsuFolder">
+		<folder external="patch" recursive="true" />
+		<folder external="patch" disc="/" />
+	</patch>
+</wiidisc>

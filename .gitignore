@@ -1,0 +1,5 @@
+patch/
+original/
+extracted/
+*.wbfs
+*.tmp
