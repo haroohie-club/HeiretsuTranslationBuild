@@ -1,6 +1,7 @@
 patch/
 original/
 extracted/
+tools/
 *.wbfs
 *.tmp
 patch.xml
