@@ -5,3 +5,4 @@ tools/
 *.wbfs
 *.tmp
 patch.xml
+copy_patch.bat
