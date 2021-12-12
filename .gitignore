@@ -1,6 +1,7 @@
-patch/
-original/
 extracted/
+intermediate/
+original/
+patch/
 tools/
 *.wbfs
 *.tmp

@@ -1,5 +1,6 @@
 Param(
-  [string]$wiinject = "tools/Wiinject/Wiinject.exe"
+  [string]$wiinject = "tools/Wiinject/Wiinject.exe",
+  [string]$basePatch = "intermediate/Heiretsu_base.xml"
 )
 
-& $wiinject -f "src" -i "801B3520" -e "801B5184" -p "patch/Riivolution/R44J8P.xml" -o "patch" -n "Heiretsu"
+& $wiinject -f "src" -i "801B3520" -e "801B5184" -p "$basePatch" -o "patch" -n "Heiretsu"
