@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Wiinject": {
-      "commandName": "Project",
-      "commandLineArgs": "-f \"C:\\Users\\User\\source\\repos\\haruhi-heiretsu-tl\\assembly\" -i 801B3520 -e 801B5184"
-    }
-  }
-}
