@@ -3,6 +3,7 @@ original/
 extracted/
 *.wbfs
 *.tmp
+patch.xml
 
 # User-specific files
 *.rsuser
