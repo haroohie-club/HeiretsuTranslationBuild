@@ -13,13 +13,13 @@ If using the BATs rather than the PS1s, please set the following environment var
 * `%HEIRETSU_CLI_PATH%` &ndash; The path to your HaruhiHeiretsuCLI installation
 
 ## Usage
-1. Copy your ripped Suzumiya Haruhi no Heiretsu wbfs to `original/R44J8P.wbfs`, then run `setup.bat`.
-2. Run `build_arc.bat` or run `build_arc.ps1` with the following command line arguments: _TODO_
+
+The patch can either be built as a Riivolution patch or a directly patched Wii ISO.
 
 ### Riivolution Patch
-3. Run `build_asm.bat` or run `build_asm.ps1` with the following command line arguments: `-wiinject` with the location of your Wiinject executable.
-4. Copy the contents of the `patch` directory to your SD card root or Dolphin's `Documents\Dolphin Emulator\Load` path.
-
-### Patched ISO (NOT YET IMPLEMENTED)
-3. Run `build_asm.bat` or run `build_asm.ps1` with the following command line arguments: `-wiinject` with the location of your Wiinject executable, and `-patchdol`.
-4. Run `build_iso.bat` or run `build_iso.ps1` with the following command line arguments: _NOT YET IMPLEMENTED_
+1. Copy your ripped Suzumiya Haruhi no Heiretsu wbfs to `original/R44J8P.wbfs`, then run `setup.bat`.
+2. Run `build.bat` or run `build.ps1` with the following command line arguments:
+    * `-heiretsuCli` with the location of your HaruhiHeiretsuCLI executable.
+    * `-wiinject` with the location of your Wiinject executable.
+    * If creating a patched ISO, also use `-patchdol` (NOT YET IMPLEMENTED)
+3. Copy the contents of the `patch` directory to your SD card root or Dolphin's `Documents\Dolphin Emulator\Load` path.

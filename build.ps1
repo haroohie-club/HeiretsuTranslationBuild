@@ -1,6 +1,7 @@
 Param(
   [string]$heiretsuCli = "tools/HaruhiHeiretsuCLI/HaruhiHeiretsuCLI.exe",
-  [string]$wiinject = "tools/Wiinject/Wiinject.exe"
+  [string]$wiinject = "tools/Wiinject/Wiinject.exe",
+  [switch]$patchDol
 )
 
 mkdir -p "./intermediate/files"
