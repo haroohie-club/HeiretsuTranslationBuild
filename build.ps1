@@ -5,7 +5,6 @@ Param(
   [switch]$patchDol
 )
 
-mkdir -p "./patch/Heiretsu/files"
 mkdir -p "./intermediate"
 & $heiretsuCli --replace-graphics -m "./extracted/DATA/files/mcb0.bln" -b "./extracted/DATA/files/grp.bin" -r "./archives/grp/$langCode/" -o "./patch/Heiretsu/files"
 & $heiretsuCli --generate-patch -o "intermediate"
