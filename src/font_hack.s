@@ -7,7 +7,6 @@ hook_8001726C:
     stw 9,12(1)
     stw 3,8(1)
     mr 3,26
-    cmpwi 3,75
     bl =font_offset
     lwz 0,20(1)
     mtlr 0
