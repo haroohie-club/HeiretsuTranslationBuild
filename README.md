@@ -13,7 +13,7 @@ follow [these instructions](https://wiki.dolphin-emu.org/index.php?title=Ripping
 * [devkitPro](https://devkitpro.org/wiki/Getting_Started)
 
 ### Environment Variables
-If using the BATs rather than the PS1s, please set the following environment variables:
+If you'd rather not pass arguments to the PS1s, you may set the following variables:
 * `%WIINJECT_PATH%` &ndash; The path to your Wiinject installation.
 * `%HEIRETSU_CLI_PATH%` &ndash; The path to your HaruhiHeiretsuCLI installation.
 * `%DEVKITPRO_PATH%` &ndash; The path to your devkitPro installation folder.
@@ -23,8 +23,8 @@ If using the BATs rather than the PS1s, please set the following environment var
 The patch can either be built as a Riivolution patch or a directly patched Wii ISO.
 
 ### Riivolution Patch
-1. Copy your ripped Suzumiya Haruhi no Heiretsu wbfs to `original/R44J8P.wbfs`, then run `setup.bat`.
-2. Run `build.bat` or run `build.ps1` with the following command line arguments:
+1. Copy your ripped Suzumiya Haruhi no Heiretsu wbfs to `original/R44J8P.wbfs`, then run `setup.ps1`.
+2. Run `build.ps1` with the following command line arguments:
     * `-heiretsuCli` with the location of your HaruhiHeiretsuCLI executable.
     * `-wiinject` with the location of your Wiinject executable.
     * `-devkitPro` with the location of your devkitPro installation folder.
