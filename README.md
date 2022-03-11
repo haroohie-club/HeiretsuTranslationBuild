@@ -1,6 +1,6 @@
 # Haruhi Heiretsu Translation Bootstrapping
 
-This repository contains tools for building the Riivolution patch of Suzumiya Haruhi no Heiretsu (The Parallel of Haruhi Suzumiya).
+This repository contains tools for building the translation patch for Suzumiya Haruhi no Heiretsu (The Parallel of Haruhi Suzumiya).
 
 ## Obtaining a ROM
 In order to build the patch, you will require a copy of the Suzumiya Haruhi no Heiretsu ROM. Please purchase the game [here](https://www.play-asia.com/suzumiya-haruhi-no-heiretsu/13/70337j) and then
@@ -24,6 +24,11 @@ The patch can either be built as a Riivolution patch or a directly patched Wii I
 
 ### Riivolution Patch
 1. Copy your ripped Suzumiya Haruhi no Heiretsu wbfs to `original/R44J8P.wbfs`, then run `setup.ps1`.
+2. Run `build_arc.ps1` with the following command line arguments:
+    * `-heiretsuCli` with the location of your HaruhiHeiretsuCLI executable.
+    * `-fontPath` with the path to the font you're using as a replacement to the game font.
+    * `-fontSize` with the size of the font for replacement.
+    * `-langCode` with the language code of the language you're buliding for.
 2. Run `build.ps1` with the following command line arguments:
     * `-heiretsuCli` with the location of your HaruhiHeiretsuCLI executable.
     * `-wiinject` with the location of your Wiinject executable.
