@@ -26,7 +26,7 @@ The patch can either be built as a Riivolution patch or a directly patched Wii I
 1. Copy your ripped Suzumiya Haruhi no Heiretsu wbfs to `original/R44J8P.wbfs`, then run `setup.ps1`.
 2. Run `build_arc.ps1` with the following command line arguments:
     * `-heiretsuCli` with the location of your HaruhiHeiretsuCLI executable.
-    * `-fontPath` with the path to the font you're using as a replacement to the game font.
+    * `-assetsFolder` with the location of the HeiretsuTranslationAssets folder.
     * `-fontSize` with the size of the font for replacement.
     * `-langCode` with the language code of the language you're buliding for.
 2. Run `build.ps1` with the following command line arguments:
