@@ -7,3 +7,5 @@ tools/
 *.tmp
 patch.xml
 copy_patch.bat
+font_replacement_map.json
+src/HeiretsuTranslation/font_hack.c
