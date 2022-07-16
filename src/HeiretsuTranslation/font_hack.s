@@ -57,3 +57,16 @@ hook_80017250:
     add 5,5,0
     mr 26,3
     blr
+
+// remove left margin on script dialogue boxes so we have more space
+hook_80037124:
+    lwz 8,-0x7F20(13)
+    subi 7,7,0x32
+    subi 8,8,0x04
+    blr
+
+// reduce vertical spacing
+hook_800160FC:
+    subi 5,5,0x08
+    add 0,0,5
+    blr
