@@ -1,3 +1,5 @@
+$printString: .skip 128
+
 ref_801BBB38:
     stwu 1,-0x30(1)
     mflr 0
@@ -28,7 +30,9 @@ ref_801BBB38:
     li 6,0x00
     bl =GetParam
     cmpwi 3,0x00
+    li 5,0
     beq print
+    li 5,1
     mr 4,3
     addi 3,1,0x04
     bl =store_script_int
@@ -39,9 +43,13 @@ ref_801BBB38:
     lwz 4,0x08(1)
     bl =CommandValueCalc
     
-    mr 4,3
+    mr 6,3
     print:
     mr 3,30
+    mr 4,5
+    lv 5,$printString
+    bl =AdjustString
+    mr 4,6
     crclr 4*cr1+eq
     bl =debug_print
 
