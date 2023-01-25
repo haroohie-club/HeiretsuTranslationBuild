@@ -2,7 +2,7 @@ Param(
     [string]$heiretsuCli = $env:HEIRETSU_CLI_PATH,
     [string]$assetsFolder,
     [string]$stringsFolder,
-    [int]$fontSize,
+    [float]$fontSize,
     [string]$langCode = "en",
     [string]$copyTo
 )
