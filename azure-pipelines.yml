@@ -58,6 +58,10 @@ jobs:
     env:
       SAS: $(HeiretsuBootstrapSAS)
     displayName: Download ROM
+  - task: UseDotNet@2
+    inputs:
+      version: 7.x
+    displayName: Install .NET 7.0
   - task: DotNetCoreCLI@2
     inputs:
       command: 'build'
