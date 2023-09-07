@@ -1,0 +1,117 @@
+trigger: none
+pr: none
+
+schedules:
+- cron: "0 1 * * *"
+  displayName: Nightly build
+  branches:
+    include:
+    - main
+  always: true
+  
+variables:
+  - group: HeiretsuSecrets
+resources:
+  repositories:
+  - repository: HeiretsuTranslationStrings
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/HeiretsuTranslationStrings
+  - repository: HeiretsuTranslationAssets
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/HeiretsuTranslationAssets
+  - repository: HeiretsuTranslationUtility
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/HeiretsuTranslationUtility
+  - repository: Wiinject
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/Wiinject
+
+jobs:
+- job:
+  strategy:
+    matrix:
+      en:
+        Language: "en"
+        PatchVersion: beta-$(Build.BuildNumber)
+  displayName: Build & Publish
+  pool:
+    vmImage: ubuntu-latest
+  container: ghcr.io/haroohie-club/heiretsu-devkitppc:main
+  steps:
+  - checkout: self
+    clean: true
+  - checkout: HeiretsuTranslationStrings
+  - checkout: HeiretsuTranslationAssets
+  - checkout: HeiretsuTranslationUtility
+  - checkout: Wiinject
+  - powershell: |
+      Write-Host "Downloading ROM..."
+      Invoke-WebRequest -Uri "https://haroohie.blob.core.windows.net/heiretsu-bootstrap/heiretsu.wbfs?$($env:SAS)" -OutFile original.wbfs
+      
+      Write-Host "Moving ROM to HeiretsuTranslationBuild..."
+      Move-Item -Path original.wbfs -Destination HeiretsuTranslationBuild/original/R44J8P.wbfs
+    env:
+      SAS: $(HeiretsuBootstrapSAS)
+    displayName: Download ROM
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: HeiretsuTranslationUtility/HaruhiHeiretsuCLI/HaruhiHeiretsuCLI.csproj
+    displayName: Build HaruhiHeiretsuCLI
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: Wiinject/Wiinject.csproj
+    displayName: Build Wiinject
+    
+  - task: PowerShell@2
+    inputs:
+      filePath: HeiretsuTranslationBuild/setup.ps1
+      workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
+    displayName: Run setup
+    
+  - task: PowerShell@2
+    inputs:
+      filePath: HeiretsuTranslationBuild/build_arc.ps1
+      arguments: -heiretsuCli "$(Build.SourcesDirectory)/HeiretsuTranslationUtility/HaruhiHeiretsuCLI/bin/Debug/net7.0/HaruhiHeiretsuCLI" -stringsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationStrings" -assetsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationAssets" -langCode "$(Language)"
+      workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
+    displayName: Build archives
+  
+  - task: PowerShell@2
+    inputs:
+      filePath: HeiretsuTranslationBuild/build_movies.ps1
+      arguments: -assetsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationAssets" -fontsDir "$(Build.SourcesDirectory)/HeiretsuTranslationAssets/fonts" -langCode "$(Language)"
+      workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
+    displayName: Subtitle THP videos
+
+  - task: PowerShell@2
+    inputs:
+      filePath: HeiretsuTranslationBuild/build.ps1
+      arguments: -heiretsuCli "$(Build.SourcesDirectory)/HeiretsuTranslationUtility/HaruhiHeiretsuCLI/bin/Debug/net7.0/HaruhiHeiretsuCLI" -wiinject "$(Build.SourcesDirectory)/Wiinject/Wiinject/bin/Debug/net6.0/Wiinject" -devkitPro "/opt/devkitpro"
+      workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
+    displayName: Build Riivolution patch
+  
+  - powershell: |
+      Write-Host "Zipping Riivolution patch..."
+      $fileToUpload = "$(Build.ArtifactStagingDirectory)/heiretsu-patch-$($env:PatchVersion).zip"
+      Compress-Archive -Path "patch" -DestinationPath $fileToUpload
+      $uploadUri = "https://haroohie.blob.core.windows.net/heiretsu-patches/heiretsu-patch-$($env:PatchVersion)-$($env:Language).zip?$env:WriteSAS"
+      $headers = @{ 'x-ms-blob-type' = 'BlockBlob' }
+      Invoke-RestMethod $uploadUri -Method PUT -Headers $headers -InFile $fileToUpload
+    env:
+      Language: $(Language)
+      PatchVersion: $(PatchVersion)
+      WriteSAS: $(PatchesWriteSAS)
+    displayName: Copy patch to Azure Storage
+  - powershell: |
+      Invoke-RestMethod -Uri "$env:WebHookUri" -Method POST -Headers @{ "Content-Type" = "application/json" } -Body "{`"content`": null, `"embeds`": [ { `"title`": `"Nightly $env:Language Patch`", `"description`": `"A new $env:Language patch is available for testing!`", `"fields`": [ { `"name`": `"Patch`", `"value`": `"[Download](https://haroohie.blob.core.windows.net/heiretsu-patches/heiretsu-patch-$($env:PatchVersion)-$($env:Language).zip?$env:ReadSAS)`" } ], `"author`": { `"name`": `"$env:Language - $env:PatchVersion`" } } ], `"attachments`": [] }"
+    env:
+      Language: $(Language)
+      WebHookUri: $(DiscordWebHook)
+      PatchVersion: $(PatchVersion)
+      ReadSAS: $(PatchesReadSAS)
+    displayName: Post patch notification to Discord

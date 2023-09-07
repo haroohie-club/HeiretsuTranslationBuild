@@ -1,1 +1,0 @@
-wit copy extracted HaruhiHeiretsu.wbfs --verbose --verbose
