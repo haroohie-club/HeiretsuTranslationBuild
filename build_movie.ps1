@@ -6,7 +6,7 @@ Param(
     [string]$langCode
 )
 
-Get-ChildItem -Path "$assetsDir/movie/$langCode/" -Filter "*.ass" | ForEach-Object {
+Get-ChildItem -Path "$assetsDir/$langCode/movie/" -Filter "*.ass" | ForEach-Object {
     $filename = [System.IO.Path]::GetFileNameWithoutExtension($_)
     Copy-Item -Path $_.FullName -Destination "./"
     $subs = "$filename.ass"
