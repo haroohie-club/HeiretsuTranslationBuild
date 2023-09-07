@@ -89,7 +89,7 @@ jobs:
   - task: PowerShell@2
     inputs:
       filePath: HeiretsuTranslationBuild/build_movie.ps1
-      arguments: -assetsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationAssets" -fontsDir "$(Build.SourcesDirectory)/HeiretsuTranslationAssets/fonts" -langCode "$(Language)"
+      arguments: -assetsDir "$(Build.SourcesDirectory)/HeiretsuTranslationAssets" -fontsDir "$(Build.SourcesDirectory)/HeiretsuTranslationAssets/fonts" -langCode "$(Language)"
       workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
     displayName: Subtitle THP videos
 
