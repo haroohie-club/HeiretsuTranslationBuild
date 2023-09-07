@@ -53,6 +53,7 @@ jobs:
       Invoke-WebRequest -Uri "https://haroohie.blob.core.windows.net/heiretsu-bootstrap/heiretsu.wbfs?$($env:SAS)" -OutFile original.wbfs
       
       Write-Host "Moving ROM to HeiretsuTranslationBuild..."
+      New-Item -Type Directory HeiretsuTranslationBuild/original
       Move-Item -Path original.wbfs -Destination HeiretsuTranslationBuild/original/R44J8P.wbfs
     env:
       SAS: $(HeiretsuBootstrapSAS)
