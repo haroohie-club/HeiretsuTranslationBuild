@@ -82,7 +82,7 @@ jobs:
   - task: PowerShell@2
     inputs:
       filePath: HeiretsuTranslationBuild/build_arc.ps1
-      arguments: -heiretsuCli "$(Build.SourcesDirectory)/HeiretsuTranslationUtility/HaruhiHeiretsuCLI/bin/Debug/net7.0/HaruhiHeiretsuCLI" -stringsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationStrings" -assetsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationAssets" -langCode "$(Language)"
+      arguments: -heiretsuCli "$(Build.SourcesDirectory)/HeiretsuTranslationUtility/HaruhiHeiretsuCLI/bin/Debug/net7.0/HaruhiHeiretsuCLI" -stringsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationStrings" -assetsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationAssets" -fontSize 20 -langCode "$(Language)"
       workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
     displayName: Build archives
   
