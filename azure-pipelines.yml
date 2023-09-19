@@ -103,7 +103,7 @@ jobs:
   - powershell: |
       Write-Host "Zipping Riivolution patch..."
       $fileToUpload = "$(Build.ArtifactStagingDirectory)/heiretsu-patch-$($env:PatchVersion).zip"
-      Compress-Archive -Path "$(Build.SourcesDirectory)/HeiretsuTranslationBuild/patch" -DestinationPath $fileToUpload
+      Compress-Archive -Path "$(Build.SourcesDirectory)/HeiretsuTranslationBuild/patch/*" -DestinationPath $fileToUpload
       Write-Host "Uploading patch to blob storage..."
       $uploadUri = "https://haroohie.blob.core.windows.net/heiretsu-patches/heiretsu-patch-$($env:PatchVersion)-$($env:Language).zip?$env:WriteSAS"
       $headers = @{ 'x-ms-blob-type' = 'BlockBlob' }
