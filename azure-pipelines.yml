@@ -44,11 +44,19 @@ jobs:
   steps:
   - checkout: self
     clean: true
+  - pwsh: |
+      $authHeader = @{ Authorization = "Token $env:ApiKey" }
+      $commitRequestBody = @{ operation = "commit" }
+      Invoke-WebRequest -Method "POST" -Headers $authHeader -ContentType "application/json; charset=utf-8" -Uri "https://weblate.haroohie.club/api/projects/suzumiya-haruhi-no-heiretsu/repository/" -Body $($commitRequestBody | ConvertTo-Json)
+      $pushRequestBody = @{ operation = "push" }
+      Invoke-WebRequest -Method "POST" -Headers $authHeader -ContentType "application/json; charset=utf-8" -Uri "https://weblate.haroohie.club/api/projects/suzumiya-haruhi-no-heiretsu/repository/" -Body $($pushRequestBody | ConvertTo-Json)
+    env:
+      ApiKey: $(WeblateApiKey)
   - checkout: HeiretsuTranslationStrings
   - checkout: HeiretsuTranslationAssets
   - checkout: HeiretsuTranslationUtility
   - checkout: Wiinject
-  - powershell: |
+  - pwsh: |
       Write-Host "Downloading ROM..."
       Invoke-WebRequest -Uri "https://haroohie.blob.core.windows.net/heiretsu-bootstrap/heiretsu.wbfs?$($env:SAS)" -OutFile original.wbfs
       
@@ -100,7 +108,7 @@ jobs:
       workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
     displayName: Build Riivolution patch
   
-  - powershell: |
+  - pwsh: |
       Write-Host "Zipping Riivolution patch..."
       $fileToUpload = "$(Build.ArtifactStagingDirectory)/heiretsu-patch-$($env:PatchVersion).zip"
       Compress-Archive -Path "$(Build.SourcesDirectory)/HeiretsuTranslationBuild/patch/*" -DestinationPath $fileToUpload
@@ -113,7 +121,7 @@ jobs:
       PatchVersion: $(PatchVersion)
       WriteSAS: $(HeiretsuPatchesWriteSAS)
     displayName: Copy patch to Azure Storage
-  - powershell: |
+  - pwsh: |
       Invoke-RestMethod -Uri "$env:WebHookUri" -Method POST -Headers @{ "Content-Type" = "application/json" } -Body "{`"content`": null, `"embeds`": [ { `"title`": `"Nightly $env:Language Patch`", `"description`": `"A new $env:Language patch is available for testing!`", `"fields`": [ { `"name`": `"Patch`", `"value`": `"[Download](https://haroohie.blob.core.windows.net/heiretsu-patches/heiretsu-patch-$($env:PatchVersion)-$($env:Language).zip?$env:ReadSAS)`" } ], `"author`": { `"name`": `"$env:Language - $env:PatchVersion`" } } ], `"attachments`": [] }"
     env:
       Language: $(Language)
