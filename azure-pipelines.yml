@@ -109,7 +109,7 @@ jobs:
   - task: PowerShell@2
     inputs:
       filePath: HeiretsuTranslationBuild/build.ps1
-      arguments: -heiretsuCli "$(Build.SourcesDirectory)/HeiretsuTranslationUtility/HaruhiHeiretsuCLI/bin/Debug/net8.0/HaruhiHeiretsuCLI" -wiinject "$(Build.SourcesDirectory)/Wiinject/Wiinject/bin/Debug/net7.0/Wiinject" -devkitPro "/opt/devkitpro"
+      arguments: -heiretsuCli "$(Build.SourcesDirectory)/HeiretsuTranslationUtility/HaruhiHeiretsuCLI/bin/Debug/net8.0/HaruhiHeiretsuCLI" -wiinject "$(Build.SourcesDirectory)/Wiinject/Wiinject/bin/Debug/net8.0/Wiinject" -devkitPro "/opt/devkitpro"
       workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
     displayName: Build Riivolution patch
   
