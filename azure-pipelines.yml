@@ -13,10 +13,6 @@ variables:
   - group: HeiretsuSecrets
 resources:
   repositories:
-  - repository: HeiretsuTranslationStrings
-    type: github
-    endpoint: haroohie-club
-    name: haroohie-club/HeiretsuTranslationStrings
   - repository: HeiretsuTranslationAssets
     type: github
     endpoint: haroohie-club
@@ -61,7 +57,8 @@ jobs:
     env:
       ApiKey: $(WeblateApiKey)
     displayName: Call Weblate commit/push API
-  - checkout: HeiretsuTranslationStrings
+  - script: git pull git@github.com:haroohie-club/HeiretsuTranslationStrings.git
+    displayName: Pull strings repo manually
   - checkout: HeiretsuTranslationAssets
   - checkout: HeiretsuTranslationUtility
   - checkout: Wiinject
