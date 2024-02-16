@@ -57,7 +57,7 @@ jobs:
     env:
       ApiKey: $(WeblateApiKey)
     displayName: Call Weblate commit/push API
-  - script: git pull https://github.com/haroohie-club/HeiretsuTranslationStrings.git
+  - script: git pull git@github.com:haroohie-club/HeiretsuTranslationStrings.git
     displayName: Pull strings repo manually
   - checkout: HeiretsuTranslationAssets
   - checkout: HeiretsuTranslationUtility
