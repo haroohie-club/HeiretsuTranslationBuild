@@ -105,7 +105,7 @@ jobs:
       Compress-Archive -Path "$(Build.SourcesDirectory)/HeiretsuTranslationBuild/patch/*" -DestinationPath $fileToUpload
       
       Write-Host "Uploading patch to storage..."
-      dotnet run --project "$(Build.SourcesDirectory/HaroohieCloudManager/HaroohieCloudManager/HaroohieCloudManager.csproj)" -- upload-patches -k $env:SpacesKey -s $env:SpacesSecret -u "https://nyc3.digitaloceanspaces.com" -n "haroohie" -g "heiretsu" -l "$env:Language" -v "$env:PatchVersion" -p "Patch:$fileToUpload" -w $(DiscordWebhook)
+      dotnet run --project "$(Build.SourcesDirectory)/HaroohieCloudManager/HaroohieCloudManager/HaroohieCloudManager.csproj" -- upload-patches -k $env:SpacesKey -s $env:SpacesSecret -u "https://nyc3.digitaloceanspaces.com" -n "haroohie" -g "heiretsu" -l "$env:Language" -v "$env:PatchVersion" -p "Patch:$fileToUpload" -w $(DiscordWebhook)
     env:
       Language: $(Language)
       PatchVersion: $(PatchVersion)
