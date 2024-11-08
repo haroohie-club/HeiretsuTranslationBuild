@@ -23,7 +23,7 @@ If you'd rather not pass arguments to the PS1s, you may set the following variab
 The patch can either be built as a Riivolution patch or a directly patched Wii ISO.
 
 ### Riivolution Patch
-1. Copy your ripped Suzumiya Haruhi no Heiretsu wbfs to `original/R44J8P.wbfs`, then run `setup.ps1`.
+1. Copy your ripped Suzumiya Haruhi no Heiretsu ISO to `original/R44J8P.iso`, then run `setup.ps1`.
 2. Run `build_arc.ps1` with the following command line arguments:
     * `-heiretsuCli` with the location of your HaruhiHeiretsuCLI executable.
     * `-assetsFolder` with the location of the HeiretsuTranslationAssets folder.

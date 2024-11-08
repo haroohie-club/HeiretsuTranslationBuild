@@ -29,6 +29,10 @@ resources:
     type: github
     endpoint: haroohie-club
     name: haroohie-club/Wiinject
+  - repository: HaroohieCloudManager
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/HaroohieCloudManager
 
 jobs:
 - job:
@@ -44,36 +48,17 @@ jobs:
   steps:
   - checkout: self
     clean: true
-  - pwsh: |
-      $authHeader = @{ Authorization = "Token $env:ApiKey" }
-      $commitRequestBody = @{ operation = "commit" }
-      try {
-        Invoke-WebRequest -Method "POST" -Headers $authHeader -ContentType "application/json; charset=utf-8" -Uri "https://weblate.haroohie.club/api/projects/suzumiya-haruhi-no-heiretsu/repository/" -Body $($commitRequestBody | ConvertTo-Json)
-      } catch {
-        Write-Host "Failed to commit"
-      }
-      $pushRequestBody = @{ operation = "push" }
-      try {
-        Invoke-WebRequest -Method "POST" -Headers $authHeader -ContentType "application/json; charset=utf-8" -Uri "https://weblate.haroohie.club/api/projects/suzumiya-haruhi-no-heiretsu/repository/" -Body $($pushRequestBody | ConvertTo-Json)
-      } catch {
-        Write-Host "Failed to push"
-      }
-    env:
-      ApiKey: $(WeblateApiKey)
-    displayName: Call Weblate commit/push API
   - checkout: HeiretsuTranslationStrings
   - checkout: HeiretsuTranslationAssets
   - checkout: HeiretsuTranslationUtility
   - checkout: Wiinject
-  - pwsh: |
-      Write-Host "Downloading ROM..."
-      Invoke-WebRequest -Uri "https://haroohie.blob.core.windows.net/heiretsu-bootstrap/heiretsu.wbfs?$($env:SAS)" -OutFile original.wbfs
-      
-      Write-Host "Moving ROM to HeiretsuTranslationBuild..."
-      New-Item -Type Directory HeiretsuTranslationBuild/original
-      Move-Item -Path original.wbfs -Destination HeiretsuTranslationBuild/original/R44J8P.wbfs
-    env:
-      SAS: $(HeiretsuBootstrapSAS)
+  - checkout: HaroohieCloudManager
+  - script: mkdir $(Build.SourcesDirectory)/original
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'run'
+      projects: HaroohieCloudManager/HaroohieCloudManager/HaroohieCloudManager.csproj
+      arguments: '-- download-rom -k $(SpacesKey) -s $(SpacesSecret) -u "https://nyc3.digitaloceanspaces.com" -n "haroohie" -r "bootstrap/heiretsu/Suzumiya Haruhi no Heiretsu (Japan).iso" -p "$(Build.SourcesDirectory)/original/R44J8P.iso"'
     displayName: Download ROM
   - task: DotNetCoreCLI@2
     inputs:
@@ -117,20 +102,13 @@ jobs:
       Write-Host "Zipping Riivolution patch..."
       $fileToUpload = "$(Build.ArtifactStagingDirectory)/heiretsu-patch-$($env:PatchVersion).zip"
       Compress-Archive -Path "$(Build.SourcesDirectory)/HeiretsuTranslationBuild/patch/*" -DestinationPath $fileToUpload
-      Write-Host "Uploading patch to blob storage..."
-      $uploadUri = "https://haroohie.blob.core.windows.net/heiretsu-patches/heiretsu-patch-$($env:PatchVersion)-$($env:Language).zip?$env:WriteSAS"
-      $headers = @{ 'x-ms-blob-type' = 'BlockBlob' }
-      Invoke-RestMethod $uploadUri -Method PUT -Headers $headers -InFile $fileToUpload
+      
+      Write-Host "Uploading patch to storage..."
+      dotnet run --project "$(Build.SourcesDirectory/HaroohieCloudManager/HaroohieCloudManager/HaroohieCloudManager.csproj)" -- upload-patches -k $env:SpacesKey -s $env:SpacesSecret -u "https://nyc3.digitaloceanspaces.com" -n "haroohie" -g "heiretsu" -l "$env:Language" -v "$env:PatchVersion" -p "Patch:$fileToUpload" -w $(DiscordWebhook)
     env:
       Language: $(Language)
       PatchVersion: $(PatchVersion)
-      WriteSAS: $(HeiretsuPatchesWriteSAS)
-    displayName: Copy patch to Azure Storage
-  - pwsh: |
-      Invoke-RestMethod -Uri "$env:WebHookUri" -Method POST -Headers @{ "Content-Type" = "application/json" } -Body "{`"content`": null, `"embeds`": [ { `"title`": `"Nightly $env:Language Patch`", `"description`": `"A new $env:Language patch is available for testing!`", `"fields`": [ { `"name`": `"Patch`", `"value`": `"[Download](https://haroohie.blob.core.windows.net/heiretsu-patches/heiretsu-patch-$($env:PatchVersion)-$($env:Language).zip?$env:ReadSAS)`" } ], `"author`": { `"name`": `"$env:Language - $env:PatchVersion`" } } ], `"attachments`": [] }"
-    env:
-      Language: $(Language)
-      WebHookUri: $(DiscordWebhookURL)
-      PatchVersion: $(PatchVersion)
-      ReadSAS: $(HeiretsuPatchesWriteSAS)
-    displayName: Post patch notification to Discord
+      SpacesKey: $(SpacesKey)
+      SpacesSecret: $(SpacesSecret)
+      DiscordWebhook: $(DiscordWebhookURL)
+    displayName: Upload to patches to storage and post Discord notification
