@@ -53,12 +53,12 @@ jobs:
   - checkout: HeiretsuTranslationUtility
   - checkout: Wiinject
   - checkout: HaroohieCloudManager
-  - script: mkdir $(Build.SourcesDirectory)/original
+  - script: mkdir $(Build.SourcesDirectory)/HeiretsuTranslationBuild/original
   - task: DotNetCoreCLI@2
     inputs:
       command: 'run'
       projects: HaroohieCloudManager/HaroohieCloudManager/HaroohieCloudManager.csproj
-      arguments: '-- download-rom -k $(SpacesKey) -s $(SpacesSecret) -u "https://nyc3.digitaloceanspaces.com" -n "haroohie" -r "bootstrap/heiretsu/Suzumiya Haruhi no Heiretsu (Japan).iso" -p "$(Build.SourcesDirectory)/original/R44J8P.iso"'
+      arguments: '-- download-rom -k $(SpacesKey) -s $(SpacesSecret) -u "https://nyc3.digitaloceanspaces.com" -n "haroohie" -r "bootstrap/heiretsu/Suzumiya Haruhi no Heiretsu (Japan).iso" -p "$(Build.SourcesDirectory)/HeiretsuTranslationBuild/original/R44J8P.iso"'
     displayName: Download ROM
   - task: DotNetCoreCLI@2
     inputs:
