@@ -54,6 +54,7 @@ jobs:
   - checkout: Wiinject
   - checkout: HaroohieCloudManager
   - script: mkdir $(Build.SourcesDirectory)/HeiretsuTranslationBuild/original
+    displayName: Create directory for ROM
   - task: DotNetCoreCLI@2
     inputs:
       command: 'run'
