@@ -3,6 +3,7 @@ intermediate/
 original/
 patch/
 tools/
+*.iso
 *.wbfs
 *.tmp
 patch.xml

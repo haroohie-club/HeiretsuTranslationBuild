@@ -1,0 +1,115 @@
+trigger: none
+pr: none
+
+schedules:
+- cron: "0 1 * * *"
+  displayName: Nightly build
+  branches:
+    include:
+    - main
+  always: true
+  
+variables:
+  - group: HeiretsuSecrets
+resources:
+  repositories:
+  - repository: HeiretsuTranslationStrings
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/HeiretsuTranslationStrings
+  - repository: HeiretsuTranslationAssets
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/HeiretsuTranslationAssets
+  - repository: HeiretsuTranslationUtility
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/HeiretsuTranslationUtility
+  - repository: Wiinject
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/Wiinject
+  - repository: HaroohieCloudManager
+    type: github
+    endpoint: haroohie-club
+    name: haroohie-club/HaroohieCloudManager
+
+jobs:
+- job:
+  strategy:
+    matrix:
+      en:
+        Language: "en"
+        PatchVersion: beta-$(Build.BuildNumber)
+  displayName: Build & Publish
+  pool:
+    vmImage: ubuntu-latest
+  container: ghcr.io/haroohie-club/heiretsu-devkitppc:main
+  steps:
+  - checkout: self
+    clean: true
+  - checkout: HeiretsuTranslationStrings
+  - checkout: HeiretsuTranslationAssets
+  - checkout: HeiretsuTranslationUtility
+  - checkout: Wiinject
+  - checkout: HaroohieCloudManager
+  - script: mkdir $(Build.SourcesDirectory)/HeiretsuTranslationBuild/original
+    displayName: Create directory for ROM
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'run'
+      projects: HaroohieCloudManager/HaroohieCloudManager/HaroohieCloudManager.csproj
+      arguments: '-- download-rom -k $(SpacesKey) -s $(SpacesSecret) -u "https://nyc3.digitaloceanspaces.com" -n "haroohie" -r "bootstrap/heiretsu/Suzumiya Haruhi no Heiretsu (Japan).iso" -p "$(Build.SourcesDirectory)/HeiretsuTranslationBuild/original/R44J8P.iso"'
+    displayName: Download ROM
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: HeiretsuTranslationUtility/HaruhiHeiretsuCLI/HaruhiHeiretsuCLI.csproj
+    displayName: Build HaruhiHeiretsuCLI
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: 'build'
+      projects: Wiinject/Wiinject/Wiinject.csproj
+    displayName: Build Wiinject
+    
+  - task: PowerShell@2
+    inputs:
+      filePath: HeiretsuTranslationBuild/setup.ps1
+      workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
+    displayName: Run setup
+    
+  - task: PowerShell@2
+    inputs:
+      filePath: HeiretsuTranslationBuild/build_arc.ps1
+      arguments: -heiretsuCli "$(Build.SourcesDirectory)/HeiretsuTranslationUtility/HaruhiHeiretsuCLI/bin/Debug/net8.0/HaruhiHeiretsuCLI" -stringsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationStrings" -assetsFolder "$(Build.SourcesDirectory)/HeiretsuTranslationAssets" -fontSize 20 -langCode "$(Language)"
+      workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
+    displayName: Build archives
+  
+  - task: PowerShell@2
+    inputs:
+      filePath: HeiretsuTranslationBuild/build_movie.ps1
+      arguments: -assetsDir "$(Build.SourcesDirectory)/HeiretsuTranslationAssets" -fontsDir "$(Build.SourcesDirectory)/HeiretsuTranslationAssets/fonts" -langCode "$(Language)"
+      workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
+    displayName: Subtitle THP videos
+
+  - task: PowerShell@2
+    inputs:
+      filePath: HeiretsuTranslationBuild/build.ps1
+      arguments: -heiretsuCli "$(Build.SourcesDirectory)/HeiretsuTranslationUtility/HaruhiHeiretsuCLI/bin/Debug/net8.0/HaruhiHeiretsuCLI" -wiinject "$(Build.SourcesDirectory)/Wiinject/Wiinject/bin/Debug/net8.0/Wiinject" -devkitPro "/opt/devkitpro"
+      workingDirectory: $(Build.SourcesDirectory)/HeiretsuTranslationBuild
+    displayName: Build Riivolution patch
+  
+  - pwsh: |
+      Write-Host "Zipping Riivolution patch..."
+      $fileToUpload = "$(Build.ArtifactStagingDirectory)/heiretsu-patch-$($env:PatchVersion).zip"
+      Compress-Archive -Path "$(Build.SourcesDirectory)/HeiretsuTranslationBuild/patch/*" -DestinationPath $fileToUpload
+      
+      Write-Host "Uploading patch to storage..."
+      dotnet run --project "$(Build.SourcesDirectory)/HaroohieCloudManager/HaroohieCloudManager/HaroohieCloudManager.csproj" -- upload-patches -k $env:SpacesKey -s $env:SpacesSecret -u "https://nyc3.digitaloceanspaces.com" -n "haroohie" -g "heiretsu" -l "$env:Language" -v "$env:PatchVersion" -p "Patch:$fileToUpload" -w "$env:DiscordWebhook"
+    env:
+      Language: $(Language)
+      PatchVersion: $(PatchVersion)
+      SpacesKey: $(SpacesKey)
+      SpacesSecret: $(SpacesSecret)
+      DiscordWebhook: $(DiscordWebhookURL)
+    displayName: Upload to patches to storage and post Discord notification
