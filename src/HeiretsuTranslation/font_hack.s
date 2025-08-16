@@ -71,11 +71,11 @@ hook_800160FC:
     add 0,0,5
     blr
 
-// reference below formatter
+# reference below formatter
 repl_80037280:
     addi 4,27,0x181B
 
-// replace #Y%d formatter with one that allows for halfwidth numbers
-// TODO: fix Wiinject to not reverse these
+# replace #Y%d formatter with one that allows for halfwidth numbers
+# TODO: fix Wiinject to not reverse these
 repl_801B1820:
     .string "d%Y#\0\0=#"
