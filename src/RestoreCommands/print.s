@@ -11,7 +11,7 @@ ref_801BBB38:
     lwz 4,0x20(31)
     li 5,0x01
     li 6,0x00
-    bl =GetParam
+    bl =scr_getParam
     cmpwi 3,0x00
     beq end
     mr 4,3
@@ -26,7 +26,7 @@ ref_801BBB38:
     lwz 4,0x20(31)
     li 5,0x05
     li 6,0x00
-    bl =GetParam
+    bl =scr_getParam
     cmpwi 3,0x00
     beq print
     mr 4,3
@@ -37,13 +37,13 @@ ref_801BBB38:
     bl =store_script_int
     lwz 3,0x04(1)
     lwz 4,0x08(1)
-    bl =CommandValueCalc
+    bl =scr_commandValueCalc
     
     mr 4,3
     print:
     mr 3,30
     crclr 4*cr1+eq
-    bl =debug_print
+    bl =dbg_log
 
     end:
     lhz 0,0x00(31)
