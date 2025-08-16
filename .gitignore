@@ -3,6 +3,7 @@ intermediate/
 original/
 patch/
 tools/
+constructed_src/
 *.iso
 *.wbfs
 *.tmp
