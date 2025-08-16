@@ -10,7 +10,7 @@ hook_8001726C:
     stw 9,12(1)
     stw 3,8(1)
     mr 3,26
-    bl =font_offset
+    bl font_offset
     lwz 0,20(1)
     mtlr 0
     mr 0,3
@@ -32,7 +32,7 @@ hook_800170B0:
     stw 9,12(1)
     stw 3,8(1)
     lwz 3,4(1)
-    bl =font_offset
+    bl font_offset
     lwz 0,20(1)
     mtlr 0
     mr 0,3
@@ -76,6 +76,5 @@ repl_80037280:
     addi 4,27,0x181B
 
 # replace #Y%d formatter with one that allows for halfwidth numbers
-# TODO: fix Wiinject to not reverse these
 repl_801B1820:
-    .string "d%Y#\0\0=#"
+    .string "#Y%d#=\0\0"
