@@ -5,6 +5,7 @@ patch/
 tools/
 constructed_src/
 *.iso
+*.rvz
 *.wbfs
 *.tmp
 patch.xml
